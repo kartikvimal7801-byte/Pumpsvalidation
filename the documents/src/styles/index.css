@@ -1,0 +1,139 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+/* Base styles */
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', system-ui, sans-serif;
+  }
+}
+
+/* Custom component styles */
+@layer components {
+  .btn-primary {
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary-200 hover:bg-secondary-300 text-secondary-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200;
+  }
+  
+  .input-field {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200;
+  }
+  
+  .module-card {
+    @apply card hover:shadow-lg cursor-pointer transform hover:scale-105 transition-all duration-300 border-l-4 border-l-primary-500;
+  }
+  
+  .project-card {
+    @apply card cursor-pointer hover:border-primary-200 transition-all duration-200;
+  }
+}
+
+/* React Flow — ensure the canvas fills its container */
+.react-flow {
+  width: 100%;
+  height: 100%;
+}
+
+/* Remove blue selection outline on workflow nodes */
+.react-flow__node.selected > div,
+.react-flow__node:focus > div,
+.react-flow__node:focus-visible > div {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Ensure workflow nodes always show pointer cursor */
+.react-flow__node {
+  cursor: pointer !important;
+}
+
+/* Remove the default React Flow node selection ring */
+.react-flow__node.selected {
+  outline: none !important;
+}
+
+/* Override default React Flow controls to match app theme */
+.react-flow__controls {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.react-flow__controls-button {
+  border-bottom: 1px solid #e2e8f0;
+  background: white;
+}
+
+.react-flow__controls-button:hover {
+  background: #f0f9ff;
+}
+
+.react-flow__minimap {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* React Flow custom styles */
+.react-flow__node-custom {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.react-flow__node-custom.selected {
+  border-color: #0ea5e9;
+}
+
+.react-flow__node-custom.approved {
+  border-color: #22c55e;
+  background-color: #f0fdf4;
+}
+
+.react-flow__node-custom.rejected {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Workflow node hover ring pulse animation */
+@keyframes pulse-ring {
+  0%   { opacity: 0.5; transform: scale(1); }
+  100% { opacity: 0;   transform: scale(1.08); }
+}
