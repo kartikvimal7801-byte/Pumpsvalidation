@@ -52,7 +52,7 @@ export default function ProjectWorkspace() {
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col min-h-0 px-4 sm:px-6 lg:px-8 py-3 gap-3">
+      <main className="flex-1 flex flex-col min-h-0 px-4 sm:px-6 lg:px-8 py-3 gap-3 overflow-y-auto">
         {loading && (
           <div className="animate-pulse grid grid-cols-4 gap-3">
             {[1,2,3,4].map(i => <Card key={i} className="p-3"><div className="h-8 bg-gray-200 rounded" /></Card>)}
@@ -71,9 +71,9 @@ export default function ProjectWorkspace() {
         )}
 
         {!loading && !error && project && (
-          <div className="flex flex-col gap-3 flex-1 min-h-0">
+          <div className="flex flex-col gap-3">
             {/* Info strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 flex-shrink-0">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
                 { icon: <User className="h-4 w-4 text-blue-600" />, bg: 'bg-blue-50', label: 'Owner', value: project.owner },
                 { icon: <Calendar className="h-4 w-4 text-green-600" />, bg: 'bg-green-50', label: 'Start Date', value: project.startDate ? formatDate(project.startDate) : '—' },
@@ -92,17 +92,18 @@ export default function ProjectWorkspace() {
               ))}
             </div>
 
+            {/* Flowchart — fixed height to force scrolling for description */}
+            <div className="h-[800px] bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+              <NPDWorkflow projectId={project.id} />
+            </div>
+
+            {/* Description below flowchart - requires scrolling */}
             {project.description && (
-              <Card className="p-3 flex-shrink-0">
+              <Card className="p-3">
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Description</p>
                 <p className="text-sm text-gray-600 leading-relaxed">{project.description}</p>
               </Card>
             )}
-
-            {/* Flowchart — fills remaining height */}
-            <div className="flex-1 min-h-0 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-              <NPDWorkflow projectId={project.id} />
-            </div>
           </div>
         )}
       </main>
