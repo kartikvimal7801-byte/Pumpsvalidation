@@ -39,5 +39,4 @@ pnpm-debug.log*
 Thumbs.db
 desktop.ini
 
-# Kiro spec files (optional - remove if you want to include them)
-.kiro/
+
