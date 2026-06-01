@@ -46,11 +46,41 @@ export interface Project {
   description?: string;
   moduleType: ModuleType;
   pumpCategory?: string; // PumpCategoryId
+  vaveMethod?: 'VA' | 'VE'; // VA or VE selection
+  costSavingSource?: string; // Selected cost saving source
   status: ProjectStatus;
   createdBy: string;
   createdAt: Date;
   updatedAt: Date;
+  completedAt?: Date; // Completion date when all stages reach 100%
   flowchartData?: FlowchartData;
+  stageProgress?: StageProgress; // L1-L5 progress tracking
+}
+
+// Stage Progress for VA/VE Projects
+export interface StageProgress {
+  L1: StageData;
+  L2: StageData;
+  L3: StageData;
+  L4: StageData;
+  L5: StageData;
+}
+
+export interface StageData {
+  status: 'locked' | 'in-progress' | 'completed';
+  completionPercentage: number;
+  uploadedFiles: UploadedFile[];
+  lastUpdated?: Date;
+  completedAt?: Date; // Date when stage reached 100%
+}
+
+export interface UploadedFile {
+  id: string;
+  name: string;
+  size: number;
+  uploadedAt: Date;
+  url?: string;
+  data?: string; // Base64 encoded file data for client-side storage
 }
 
 export interface CreateProjectRequest {
@@ -60,6 +90,8 @@ export interface CreateProjectRequest {
   description?: string;
   moduleType: ModuleType;
   pumpCategory?: string; // PumpCategoryId
+  vaveMethod?: 'VA' | 'VE';
+  costSavingSource?: string;
 }
 
 export interface UpdateProjectRequest {
@@ -68,6 +100,8 @@ export interface UpdateProjectRequest {
   startDate?: string;
   description?: string;
   status?: ProjectStatus;
+  stageProgress?: StageProgress;
+  completedAt?: Date;
 }
 
 // Flowchart Types

@@ -3,9 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, AlertCircle, Calendar, User, Tag, Clock } from 'lucide-react';
 import { Button, Card } from '@/components/common';
 import { projectService } from '@/services/projectService';
-import { Project } from '@/types';
+import { Project, StageProgress } from '@/types';
 import { formatDate, getStatusColor } from '@/utils';
 import NPDWorkflow from '@/features/npd/components/NPDWorkflow';
+import VAVEWorkspace from '@/features/vave/components/VAVEWorkspace';
 
 export default function ProjectWorkspace() {
   const { moduleType, projectId } = useParams<{ moduleType: string; projectId: string }>();
@@ -26,6 +27,29 @@ export default function ProjectWorkspace() {
       finally { setLoading(false); }
     })();
   }, [projectId]);
+
+  const handleProgressUpdate = async (progress: StageProgress) => {
+    if (!projectId || !project) return;
+    try {
+      // Check if all stages are completed (L5 at 100%)
+      const allStagesCompleted = progress.L5.status === 'completed';
+      
+      const updates: any = { stageProgress: progress };
+      
+      // If all stages completed and project not already completed, mark as completed
+      if (allStagesCompleted && project.status !== 'completed') {
+        updates.status = 'completed';
+        updates.completedAt = new Date();
+      }
+      
+      const res = await projectService.updateProject(projectId, updates);
+      if (res.success && res.data) {
+        setProject(res.data);
+      }
+    } catch (err) {
+      console.error('Failed to update stage progress:', err);
+    }
+  };
 
   const statusLabel = project
     ? project.status.charAt(0).toUpperCase() + project.status.slice(1).replace('-', ' ')
@@ -94,7 +118,19 @@ export default function ProjectWorkspace() {
 
             {/* Flowchart — fixed height to force scrolling for description */}
             <div className="h-[800px] bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-              <NPDWorkflow projectId={project.id} />
+              {project.moduleType === 'vave' ? (
+                <div className="p-6 h-full overflow-y-auto">
+                  <VAVEWorkspace
+                    projectId={project.id}
+                    initialProgress={project.stageProgress}
+                    completedAt={project.completedAt}
+                    isProjectCompleted={project.status === 'completed'}
+                    onProgressUpdate={handleProgressUpdate}
+                  />
+                </div>
+              ) : (
+                <NPDWorkflow projectId={project.id} />
+              )}
             </div>
 
             {/* Description below flowchart - requires scrolling */}

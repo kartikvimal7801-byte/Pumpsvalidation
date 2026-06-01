@@ -109,6 +109,16 @@ class ProjectService {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const allProjects = this.getStoredProjects();
+      
+      // Initialize stage progress for VA/VE projects
+      const stageProgress = projectData.moduleType === 'vave' ? {
+        L1: { status: 'in-progress' as const, completionPercentage: 0, uploadedFiles: [] },
+        L2: { status: 'locked' as const, completionPercentage: 0, uploadedFiles: [] },
+        L3: { status: 'locked' as const, completionPercentage: 0, uploadedFiles: [] },
+        L4: { status: 'locked' as const, completionPercentage: 0, uploadedFiles: [] },
+        L5: { status: 'locked' as const, completionPercentage: 0, uploadedFiles: [] },
+      } : undefined;
+
       const newProject: Project = {
         id: generateProjectId(projectData.moduleType),
         name: projectData.name,
@@ -117,6 +127,9 @@ class ProjectService {
         description: projectData.description,
         moduleType: projectData.moduleType,
         pumpCategory: projectData.pumpCategory,
+        vaveMethod: projectData.vaveMethod,
+        costSavingSource: projectData.costSavingSource,
+        stageProgress,
         status: 'active',
         createdBy: userId,
         createdAt: new Date(),

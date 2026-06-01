@@ -7,6 +7,9 @@ import NPDProjects from '@/features/npd/pages/NPDProjects'
 import NPDCategoryProjects from '@/features/npd/pages/NPDCategoryProjects'
 import NPDProjectDetail from '@/features/npd/pages/NPDProjectDetail'
 import VAVEProjects from '@/features/vave/pages/VAVEProjects'
+import VAVEMethodSelection from '@/features/vave/pages/VAVEMethodSelection'
+import VAVESourceProjects from '@/features/vave/pages/VAVESourceProjects'
+import VAVECategoryProjects from '@/features/vave/pages/VAVECategoryProjects'
 import StandardizationProjects from '@/features/standardization/pages/StandardizationProjects'
 import ProjectWorkspace from '@/features/common/pages/ProjectWorkspace'
 import DevConsole from '@/devtools/DevConsole'
@@ -55,6 +58,30 @@ function App() {
               element={
                 <AuthGuard>
                   <VAVEProjects />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/vave/method/:categoryId"
+              element={
+                <AuthGuard>
+                  <VAVEMethodSelection />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/vave/source/:categoryId/:method/:source"
+              element={
+                <AuthGuard>
+                  <VAVESourceProjects />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/vave/:categoryId"
+              element={
+                <AuthGuard>
+                  <VAVECategoryProjects />
                 </AuthGuard>
               }
             />

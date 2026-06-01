@@ -117,10 +117,17 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             <span className="truncate">{project.owner}</span>
           </div>
 
-          <div className="flex items-center text-xs text-gray-500">
-            <Calendar className="h-3 w-3 mr-1.5 flex-shrink-0" />
-            Created: {formatDate(project.createdAt)}
-          </div>
+          {project.status === 'completed' && project.completedAt ? (
+            <div className="flex items-center text-xs text-green-600 font-medium">
+              <Calendar className="h-3 w-3 mr-1.5 flex-shrink-0" />
+              Completed: {formatDate(project.completedAt)}
+            </div>
+          ) : (
+            <div className="flex items-center text-xs text-gray-500">
+              <Calendar className="h-3 w-3 mr-1.5 flex-shrink-0" />
+              Created: {formatDate(project.createdAt)}
+            </div>
+          )}
         </div>
 
         {/* Double-click hint */}
