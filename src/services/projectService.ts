@@ -6,9 +6,16 @@ import {
   ApiResponse,
   SearchParams,
 } from '@/types';
-import { generateProjectId } from '@/data/mockProjects';
 import { storage } from '@/utils';
 import { authService } from '@/services/authService';
+
+// Generate a unique project ID using a timestamp suffix to avoid collisions across users
+const generateProjectId = (moduleType: ModuleType): string => {
+  const prefix =
+    moduleType === 'npd' ? 'npd' : moduleType === 'vave' ? 'vave' : 'std';
+  const suffix = Date.now().toString(36).toUpperCase(); // e.g. "LX7K2A"
+  return `${prefix}-${suffix}`;
+};
 
 // Project service class for managing project operations.
 // All data is scoped per user — each user has their own isolated localStorage key.

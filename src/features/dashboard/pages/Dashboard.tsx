@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -12,10 +12,64 @@ import {
 import { useAuth } from '@/features/auth/contexts/AuthContext';
 import { Card, Button, Input } from '@/components/common';
 import { ModuleCard } from '../components/ModuleCard';
+import { projectService } from '@/services/projectService';
+import { authorizedUsers } from '@/data/authorizedUsers';
+
+interface DashboardStats {
+  total: number;
+  active: number;
+  completed: number;
+  byModule: {
+    npd: { active: number; completed: number; total: number };
+    vave: { active: number; completed: number; total: number };
+    standardization: { active: number; completed: number; total: number };
+  };
+}
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [stats, setStats] = useState<DashboardStats>({
+    total: 0,
+    active: 0,
+    completed: 0,
+    byModule: {
+      npd: { active: 0, completed: 0, total: 0 },
+      vave: { active: 0, completed: 0, total: 0 },
+      standardization: { active: 0, completed: 0, total: 0 },
+    },
+  });
+
+  useEffect(() => {
+    const loadStats = async () => {
+      const response = await projectService.getProjectStats();
+      if (response.success && response.data) {
+        // Calculate module-specific stats
+        const npdProjects = await projectService.getProjectsByModule('npd');
+        const vaveProjects = await projectService.getProjectsByModule('vave');
+        const stdProjects = await projectService.getProjectsByModule('standardization');
+
+        const calculateModuleStats = (projects: any[]) => ({
+          active: projects.filter(p => p.status === 'active').length,
+          completed: projects.filter(p => p.status === 'completed').length,
+          total: projects.length,
+        });
+
+        setStats({
+          total: response.data.total,
+          active: response.data.active,
+          completed: response.data.completed,
+          byModule: {
+            npd: calculateModuleStats(npdProjects.data || []),
+            vave: calculateModuleStats(vaveProjects.data || []),
+            standardization: calculateModuleStats(stdProjects.data || []),
+          },
+        });
+      }
+    };
+
+    loadStats();
+  }, []);
 
   const modules: {
     id: string;
@@ -34,7 +88,7 @@ export default function Dashboard() {
       description: 'Manage and track new product development projects with comprehensive workflow management.',
       icon: <TrendingUp className="h-8 w-8" />,
       color: 'primary',
-      stats: { active: 12, completed: 8, total: 20 },
+      stats: stats.byModule.npd,
       onClick: () => navigate('/npd'),
     },
     {
@@ -44,7 +98,7 @@ export default function Dashboard() {
       description: 'Optimize product value through systematic analysis and engineering improvements.',
       icon: <Settings className="h-8 w-8" />,
       color: 'accent',
-      stats: { active: 6, completed: 15, total: 21 },
+      stats: stats.byModule.vave,
       onClick: () => navigate('/vave'),
     },
     {
@@ -54,7 +108,7 @@ export default function Dashboard() {
       description: 'Establish and maintain standardized processes across all product development activities.',
       icon: <CheckCircle className="h-8 w-8" />,
       color: 'success',
-      stats: { active: 4, completed: 12, total: 16 },
+      stats: stats.byModule.standardization,
       onClick: () => navigate('/standardization'),
     },
   ];
@@ -139,7 +193,7 @@ export default function Dashboard() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Projects</p>
-                <p className="text-2xl font-bold text-gray-900">57</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
               </div>
             </div>
           </Card>
@@ -151,7 +205,7 @@ export default function Dashboard() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Active Projects</p>
-                <p className="text-2xl font-bold text-gray-900">22</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.active}</p>
               </div>
             </div>
           </Card>
@@ -163,7 +217,7 @@ export default function Dashboard() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Completed</p>
-                <p className="text-2xl font-bold text-gray-900">35</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.completed}</p>
               </div>
             </div>
           </Card>
@@ -175,7 +229,7 @@ export default function Dashboard() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Team Members</p>
-                <p className="text-2xl font-bold text-gray-900">24</p>
+                <p className="text-2xl font-bold text-gray-900">{authorizedUsers.filter(u => u.isActive).length}</p>
               </div>
             </div>
           </Card>
@@ -216,24 +270,9 @@ export default function Dashboard() {
               Recent Activity
             </h3>
             <div className="space-y-4">
-              {[
-                { project: 'Self Priming Pump Development', action: 'Flowchart updated', time: '2 hours ago', module: 'NPD' },
-                { project: 'Centrifugal Pump Optimization', action: 'Status changed to completed', time: '4 hours ago', module: 'VA/VE' },
-                { project: 'Quality Standards Review', action: 'New milestone added', time: '1 day ago', module: 'Standardization' },
-              ].map((activity, index) => (
-                <div key={index} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
-                  <div>
-                    <p className="font-medium text-gray-900">{activity.project}</p>
-                    <p className="text-sm text-gray-600">{activity.action}</p>
-                  </div>
-                  <div className="text-right">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
-                      {activity.module}
-                    </span>
-                    <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                  </div>
-                </div>
-              ))}
+              <div className="text-center py-8 text-gray-500">
+                No recent activity available
+              </div>
             </div>
           </Card>
         </motion.div>
