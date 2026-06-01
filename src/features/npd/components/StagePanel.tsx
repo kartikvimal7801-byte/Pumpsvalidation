@@ -189,6 +189,9 @@ export default function StagePanel({
   const [reviewComment, setReviewComment] = useState(stageData.reviewComment);
   const [uploading, setUploading] = useState(false);
   const [testCompleted, setTestCompleted] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [fileDescription, setFileDescription] = useState('');
+  const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const userId = user?.id ?? 'unknown';
@@ -203,6 +206,16 @@ export default function StagePanel({
   const handleFiles = useCallback(
     async (files: FileList | null) => {
       if (!files || files.length === 0) return;
+      
+      // For single file, show description modal
+      if (files.length === 1) {
+        setPendingFile(files[0]);
+        setFileDescription('');
+        setShowDescriptionModal(true);
+        return;
+      }
+      
+      // For multiple files, upload without description
       setUploading(true);
       try {
         for (const file of Array.from(files)) {
@@ -217,6 +230,36 @@ export default function StagePanel({
     },
     [projectId, nodeId, userId, userName, onDataChange]
   );
+
+  const handleUploadWithDescription = async () => {
+    if (!pendingFile) return;
+    
+    setUploading(true);
+    setShowDescriptionModal(false);
+    try {
+      await workflowService.uploadFile(
+        projectId, 
+        nodeId, 
+        pendingFile, 
+        userId, 
+        userName,
+        fileDescription || undefined
+      );
+      onDataChange();
+    } catch (err) {
+      console.error('Upload failed:', err);
+    } finally {
+      setUploading(false);
+      setPendingFile(null);
+      setFileDescription('');
+    }
+  };
+
+  const handleCancelUpload = () => {
+    setShowDescriptionModal(false);
+    setPendingFile(null);
+    setFileDescription('');
+  };
 
   const onDrop = useCallback(
     (e: React.DragEvent) => {
@@ -418,29 +461,34 @@ export default function StagePanel({
                 {stageData.files.map((file) => (
                   <div
                     key={file.id}
-                    className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-lg border border-gray-200"
+                    className="flex items-start gap-2 p-2.5 bg-gray-50 rounded-lg border border-gray-200"
                   >
-                    <FileText className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                    <FileText className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-gray-800 truncate">{file.name}</p>
-                      <p className="text-[10px] text-gray-400">
+                      {file.description && (
+                        <p className="text-xs text-gray-600 mt-1 line-clamp-2">{file.description}</p>
+                      )}
+                      <p className="text-[10px] text-gray-400 mt-1">
                         {formatFileSize(file.size)} · {file.uploadedBy} · {formatTimestamp(file.uploadedAt)}
                       </p>
                     </div>
-                    <button
-                      onClick={() => downloadFile(file)}
-                      className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                      title="Download"
-                    >
-                      <Download className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => deleteFile(file.id)}
-                      className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                      title="Delete"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    <div className="flex gap-1 flex-shrink-0">
+                      <button
+                        onClick={() => downloadFile(file)}
+                        className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                        title="Download"
+                      >
+                        <Download className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => deleteFile(file.id)}
+                        className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                        title="Delete"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -565,6 +613,50 @@ export default function StagePanel({
           Save Changes
         </button>
       </div>
+
+      {/* Description Modal */}
+      {showDescriptionModal && pendingFile && (
+        <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-[400px] max-w-[90%]">
+            <div className="px-5 py-4 border-b border-gray-200">
+              <h3 className="text-sm font-bold text-gray-900">Add File Description</h3>
+              <p className="text-xs text-gray-500 mt-1">
+                Uploading: <span className="font-semibold">{pendingFile.name}</span>
+              </p>
+            </div>
+            <div className="px-5 py-4">
+              <label className="block text-xs font-medium text-gray-700 mb-2">
+                Description (optional)
+              </label>
+              <textarea
+                value={fileDescription}
+                onChange={(e) => setFileDescription(e.target.value)}
+                placeholder="Enter a brief description for this file..."
+                rows={3}
+                className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-[#1a7a8a]"
+                autoFocus
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                This description will be displayed with the file and will NOT be included in the file content.
+              </p>
+            </div>
+            <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
+              <button
+                onClick={handleCancelUpload}
+                className="px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUploadWithDescription}
+                className="px-4 py-2 text-sm font-semibold text-white bg-[#1a7a8a] hover:bg-[#155f6e] rounded-lg transition-colors"
+              >
+                Upload File
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

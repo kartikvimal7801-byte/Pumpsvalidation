@@ -183,6 +183,12 @@ export default function DocumentsPanel({
                 {/* File info */}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-gray-800 truncate">{doc.name}</p>
+                  
+                  {/* Description - shown above metadata */}
+                  {doc.description && (
+                    <p className="text-xs text-gray-600 mt-1 line-clamp-2">{doc.description}</p>
+                  )}
+                  
                   <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                     <span className="text-[10px] font-bold text-[#1a7a8a] bg-[#e0f7fa] px-1.5 py-0.5 rounded">
                       {doc.stageLabel}

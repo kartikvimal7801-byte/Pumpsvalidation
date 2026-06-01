@@ -8,6 +8,7 @@ interface ProjectFormData {
   name: string;
   owner: string;
   startDate: string;
+  description?: string;
 }
 
 interface ProjectFormProps {
@@ -41,6 +42,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
       name: project?.name || '',
       owner: project?.owner || '',
       startDate: project?.startDate || '',
+      description: project?.description || '',
     },
   });
 
@@ -50,6 +52,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
         name: project?.name || '',
         owner: project?.owner || '',
         startDate: project?.startDate || '',
+        description: project?.description || '',
       });
     }
   }, [isOpen, project, reset]);
@@ -157,6 +160,19 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
             required: 'Start date is required',
           })}
         />
+
+        {/* Description */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Description <span className="text-gray-400 font-normal">(optional)</span>
+          </label>
+          <textarea
+            {...register('description')}
+            placeholder="Brief description of the project..."
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200 resize-none text-sm"
+          />
+        </div>
 
         {/* Root error */}
         {errors.root && (

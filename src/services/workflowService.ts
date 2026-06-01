@@ -10,6 +10,7 @@ export interface UploadedFile {
   uploadedBy: string;
   uploadedAt: string;
   dataUrl: string; // base64 stored in localStorage
+  description?: string; // optional description for the file
 }
 
 export interface ValidationCriterion {
@@ -195,7 +196,8 @@ export const workflowService = {
     nodeId: string,
     file: File,
     userId: string,
-    userName: string
+    userName: string,
+    description?: string
   ): Promise<WorkflowState> {
     const dataUrl = await new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
@@ -215,6 +217,7 @@ export const workflowService = {
       uploadedBy: userName,
       uploadedAt: new Date().toISOString(),
       dataUrl,
+      description,
     };
 
     stage.files = [...stage.files, uploaded];
