@@ -507,10 +507,26 @@ export async function runSuites(
   const all: TestResult[] = [];
 
   for (const suite of suites) {
-    const results = await suite.run();
-    for (const r of results) {
-      all.push(r);
-      onProgress?.(r);
+    try {
+      const results = await suite.run();
+      for (const r of results) {
+        all.push(r);
+        onProgress?.(r);
+      }
+    } catch (error) {
+      // If a suite throws an error, record it as a failed test result
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const failedResult = makeResult(
+        `${suite.id}-error`,
+        `Suite "${suite.name}" execution error`,
+        suite.category,
+        'fail',
+        `Suite threw exception: ${errorMessage}`,
+        0,
+        error instanceof Error ? error.stack : undefined
+      );
+      all.push(failedResult);
+      onProgress?.(failedResult);
     }
   }
 

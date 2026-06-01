@@ -8,11 +8,11 @@
 
 **Subtasks:**
 - [x] 1.1 Verify `TestResult`, `TestSuite`, `TestCategory`, `TestStatus` types are exported
-- [ ] 1.2 Verify `registerSuite()`, `getSuites()`, `runSuites()` functions are exported
-- [~] 1.3 Ensure `runSuites()` accepts optional `category` parameter and `onProgress` callback
-- [~] 1.4 Test that `runSuites()` with no category executes all registered suites sequentially
-- [~] 1.5 Test that `onProgress` callback is invoked for each test result
-- [~] 1.6 Add error handling: catch suite execution errors and record as `fail` status
+- [x] 1.2 Verify `registerSuite()`, `getSuites()`, `runSuites()` functions are exported
+- [x] 1.3 Ensure `runSuites()` accepts optional `category` parameter and `onProgress` callback
+- [x] 1.4 Test that `runSuites()` with no category executes all registered suites sequentially
+- [x] 1.5 Test that `onProgress` callback is invoked for each test result
+- [x] 1.6 Add error handling: catch suite execution errors and record as `fail` status
 
 **Acceptance:**
 - `runSuites()` without category argument runs all test suites
@@ -26,8 +26,8 @@
 **Description:** Replace individual category buttons with a single "TEST ALL" button in the DevConsole ActionBar.
 
 **Subtasks:**
-- [~] 2.1 Remove individual category buttons (Navigation, Buttons, Forms, Flowchart, Files, API, Database) from ActionBar
-- [~] 2.2 Add single "TEST ALL" button with primary styling
+- [x] 2.1 Remove individual category buttons (Navigation, Buttons, Forms, Flowchart, Files, API, Database) from ActionBar
+- [ ] 2.2 Add single "TEST ALL" button with primary styling
 - [~] 2.3 Update `runTests()` method to call `runSuites()` without category parameter
 - [~] 2.4 Add "RUNNING…" indicator that displays while tests execute
 - [~] 2.5 Disable "TEST ALL" button while `running === true` to prevent concurrent runs

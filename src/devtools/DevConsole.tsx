@@ -2,9 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   Bug, X, Play, ChevronDown, ChevronUp, Download,
   CheckCircle, XCircle, AlertTriangle, SkipForward,
-  Navigation, MousePointer, FileText, GitBranch,
-  HardDrive, Wifi, Database, Trash2, FlaskConical,
-  Clock,
+  Trash2, FlaskConical, Clock,
 } from 'lucide-react';
 import { runSuites, TestResult, TestCategory, TestStatus } from './testEngine';
 
@@ -31,25 +29,7 @@ const STATUS_ICON: Record<TestStatus, React.ReactNode> = {
   skipped: <SkipForward  className="h-3.5 w-3.5" style={{ color: STATUS_COLOR.skipped }} />,
 };
 
-const CAT_ICON: Record<TestCategory, React.ReactNode> = {
-  navigation: <Navigation  className="h-3.5 w-3.5" />,
-  buttons:    <MousePointer className="h-3.5 w-3.5" />,
-  forms:      <FileText    className="h-3.5 w-3.5" />,
-  flowchart:  <GitBranch   className="h-3.5 w-3.5" />,
-  files:      <HardDrive   className="h-3.5 w-3.5" />,
-  api:        <Wifi        className="h-3.5 w-3.5" />,
-  database:   <Database    className="h-3.5 w-3.5" />,
-};
 
-const CATEGORIES: { id: TestCategory; label: string }[] = [
-  { id: 'navigation', label: 'Navigation' },
-  { id: 'buttons',    label: 'Buttons' },
-  { id: 'forms',      label: 'Forms' },
-  { id: 'flowchart',  label: 'Flowchart' },
-  { id: 'files',      label: 'Files' },
-  { id: 'api',        label: 'API' },
-  { id: 'database',   label: 'Database' },
-];
 
 // ─── Log line ─────────────────────────────────────────────────────────────────
 interface LogLine {
@@ -252,16 +232,6 @@ export default function DevConsole() {
               disabled={running}
               onClick={() => runTests()}
             />
-            {CATEGORIES.map((c) => (
-              <ActionBtn
-                key={c.id}
-                icon={CAT_ICON[c.id]}
-                label={`Run ${c.label}`}
-                color="#1e40af"
-                disabled={running}
-                onClick={() => runTests(c.id)}
-              />
-            ))}
             <ActionBtn
               icon={<Trash2 className="h-3 w-3" />}
               label="Clear"
