@@ -7,7 +7,8 @@ import {
   CheckCircle, 
   Users,
   LogOut,
-  Search
+  Search,
+  Cpu
 } from 'lucide-react';
 import { useAuth } from '@/features/auth/contexts/AuthContext';
 import { Card, Button, Input } from '@/components/common';
@@ -77,9 +78,10 @@ export default function Dashboard() {
     subtitle: string;
     description: string;
     icon: ReactNode;
-    color: 'primary' | 'accent' | 'success';
+    color: 'primary' | 'accent' | 'success' | 'info';
     stats: { active: number; completed: number; total: number };
     onClick: () => void;
+    isExternal?: boolean;
   }[] = [
     {
       id: 'npd',
@@ -110,6 +112,17 @@ export default function Dashboard() {
       color: 'success',
       stats: stats.byModule.standardization,
       onClick: () => navigate('/standardization'),
+    },
+    {
+      id: 'reverse-engineering',
+      title: 'Reverse Engineering',
+      subtitle: 'AI-Based Reverse Engineering',
+      description: 'AI-Based Reverse Engineering of Benchmark Products',
+      icon: <Cpu className="h-8 w-8" />,
+      color: 'info',
+      stats: { active: 0, completed: 0, total: 0 },
+      onClick: () => window.open('https://reverse-engineering-gamma.vercel.app/', '_blank'),
+      isExternal: true,
     },
   ];
 
@@ -244,7 +257,7 @@ export default function Dashboard() {
           <h3 className="text-xl font-semibold text-gray-900 mb-6">
             Project Modules
           </h3>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
             {modules.map((module, index) => (
               <motion.div
                 key={module.id}

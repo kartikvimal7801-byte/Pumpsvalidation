@@ -28,7 +28,7 @@ export const authorizedUsers: AuthorizedUser[] = [
     id: '2',
     email: 'demo@havells.com',
     password: 'demo123',
-    firstName: 'Demo',
+    firstName: 'Demo', 
     lastName: 'User',
     role: 'user',
     department: 'Engineering',
